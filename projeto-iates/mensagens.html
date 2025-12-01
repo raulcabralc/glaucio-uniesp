@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luxo - Mensagens</title>
+    <link rel="shortcut icon" href="images/barco2.png" type="image/x-icon" />
+    <link rel="stylesheet" href="css/default.css" />
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .nao-visualizada {
+        font-weight: bold;
+      }
+      .visualizada {
+        font-weight: normal;
+      }
+      .btn-acao {
+        margin: 2px;
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <header>
+        <div id="title">
+          <img src="images/barco1.png" alt="ícone de barco" />
+          <div class="headtitle">
+            <h1>Luxo</h1>
+            <h2>Aluguel de iates</h2>
+          </div>
+        </div>
+
+        <nav>
+          <ul class="navmenu">
+            <li><a href="index.html">Página inicial</a></li>
+            <li><a href="aluguel.html">Aluguel de iates</a></li>
+            <li><a href="destinos.html">Destinos</a></li>
+            <li><a href="tripulacao.html">Tripulação</a></li>
+            <li><a href="contato.html">Contato</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <main>
+        <div class="pagtitle">
+          <div class="bgtitle"></div>
+          <h2>Mensagens Recebidas</h2>
+        </div>
+
+        <table id="tabela-mensagens">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Mensagem</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-mensagens"></tbody>
+        </table>
+      </main>
+    </div>
+
+    <footer>
+      <p>© 2023 por Luxo aluguel de iates</p>
+    </footer>
+
+    <script src="js/jquery-3.6.4.min.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+      let mensagensVisualizadas =
+        JSON.parse(localStorage.getItem("mensagensVisualizadas")) || [];
+      let mensagensExcluidas =
+        JSON.parse(localStorage.getItem("mensagensExcluidas")) || [];
+
+      function carregarMensagens() {
+        const mensagens = obterMensagens();
+        const tbody = document.getElementById("tbody-mensagens");
+        tbody.innerHTML = "";
+
+        mensagens.forEach((msg, index) => {
+          if (!mensagensExcluidas.includes(index)) {
+            const tr = document.createElement("tr");
+            const isVisualizada = mensagensVisualizadas.includes(index);
+
+            tr.className = isVisualizada ? "visualizada" : "nao-visualizada";
+            tr.innerHTML = `
+              <td>${msg.nome}</td>
+              <td>${msg.email}</td>
+              <td>${msg.mensagem}</td>
+              <td>
+                <button class="btn-acao" onclick="marcarVisualizada(${index})">Mensagem Visualizada</button>
+                <button class="btn-acao" onclick="excluirMensagem(${index})">Excluir Mensagem</button>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          }
+        });
+      }
+
+      function marcarVisualizada(index) {
+        if (!mensagensVisualizadas.includes(index)) {
+          mensagensVisualizadas.push(index);
+          localStorage.setItem(
+            "mensagensVisualizadas",
+            JSON.stringify(mensagensVisualizadas)
+          );
+          carregarMensagens();
+        }
+      }
+
+      function excluirMensagem(index) {
+        if (confirm("Deseja excluir esta mensagem?")) {
+          mensagensExcluidas.push(index);
+          localStorage.setItem(
+            "mensagensExcluidas",
+            JSON.stringify(mensagensExcluidas)
+          );
+          carregarMensagens();
+        }
+      }
+
+      carregarMensagens();
+    </script>
+  </body>
+</html>
